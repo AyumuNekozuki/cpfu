@@ -1,8 +1,8 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - cpfu',
-    title: 'cpfu',
+    titleTemplate: '%s - CPFU',
+    title: 'CPFU',
     htmlAttrs: {
       lang: 'ja'
     },
@@ -19,6 +19,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~/assets/nicoicon_fonts/nicoicon.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -39,8 +40,7 @@ export default {
     'bootstrap-vue/nuxt',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    [
-      '@nuxtjs/firebase',
+    ['@nuxtjs/firebase',
       {
         config: {
           apiKey: process.env.fb_apiKey,
@@ -52,11 +52,25 @@ export default {
           measurementId: process.env.fb_measurementId,
         },
         services: {
-          auth: true // Just as example. Can be any other service.
+          auth: true
         }
       }
     ],
+    'nuxt-fontawesome',
   ],
+
+  fontawesome: {
+    imports: [
+      {
+        set: '@fortawesome/free-solid-svg-icons',
+        icons: ['fas'],
+      },
+      {
+        set: '@fortawesome/free-brands-svg-icons',
+        icons: ['fab'],
+      },
+    ],
+  },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
