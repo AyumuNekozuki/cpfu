@@ -33,6 +33,9 @@ export default {
   buildModules: [
     '@nuxtjs/dotenv'
   ],
+  // router: {
+  //   // middleware: ['auth']
+  // },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
@@ -52,7 +55,16 @@ export default {
           measurementId: process.env.fb_measurementId,
         },
         services: {
-          auth: true
+          auth: {
+            persistence: 'local', // default
+            initialize: {
+              onAuthStateChangedMutation: 'ON_AUTH_STATE_CHANGED_MUTATION',
+              onAuthStateChangedAction: 'onAuthStateChangedAction',
+              subscribeManually: false
+            },
+            ssr: true, // default
+          },
+          firestore: true,
         }
       }
     ],
@@ -80,5 +92,10 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    extend(config, ctx) {
+      config.node = {
+        fs: "empty"
+      }
+    }
   }
 }

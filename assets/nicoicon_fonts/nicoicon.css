@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'nicoicon';
-  src:  url('nicoicon.eot?l7t2f5');
-  src:  url('nicoicon.eot?l7t2f5#iefix') format('embedded-opentype'),
-    url('nicoicon.ttf?l7t2f5') format('truetype'),
-    url('nicoicon.woff?l7t2f5') format('woff'),
-    url('nicoicon.svg?l7t2f5#nicoicon') format('svg');
+  src:  url('nicoicon.eot?s6746p');
+  src:  url('nicoicon.eot?s6746p#iefix') format('embedded-opentype'),
+    url('nicoicon.ttf?s6746p') format('truetype'),
+    url('nicoicon.woff?s6746p') format('woff'),
+    url('nicoicon.svg?s6746p#nicoicon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,9 +25,6 @@ i {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.nico-tvchan:before {
-  content: "\e90f";
-}
 .nico-comment:before {
   content: "\e901";
 }
@@ -69,4 +66,19 @@ i {
 }
 .nico-namaco:before {
   content: "\e90e";
+}
+.nico-tvchan:before {
+  content: "\e90f";
+}
+.nico-play:before {
+  content: "\e900";
+}
+.nico-gift:before {
+  content: "\e911";
+}
+.nico-emotion:before {
+  content: "\e910";
+}
+.nico-nicoad:before {
+  content: "\e912";
 }
