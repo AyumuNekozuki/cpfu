@@ -1,32 +1,13 @@
 export const state = () => ({
   user: '',
-  // email: '',
-  // displayName: '',
-  // uid: ''
 });
 
 
 export const mutations = {
-  // setEmail(state, email){
-  //   state.email = email;
-  // },
-  // setDisplayName(state, displayName){
-  //   state.displayName = displayName;
-  // },
-  // setUid(state, uid){
-  //   state.uid = uid;
-  // }
   SET_USER(state, user) {
     state.user = user;
   }
 };
-
-// const mutations = {
-//   SET_USER(state, user) {
-//     state.user = user
-//   }
-// }
-
 
 
 export const actions = {
@@ -42,24 +23,20 @@ export const actions = {
       });
     } else {
       // authされている場合
-      console.log("authUser");
-      console.log(authUser);
-
       const { uid, email, displayName } = authUser;
       state.commit('SET_USER', {
         uid,
         email,
         displayName
       });
+
+      this.$router.push({
+        path: '/my',
+      });
     }
   }
 }
 
-// const getters = {
-//   getUser(state) {
-//     return state.user
-//   }
-// }
 
 export const getters = {
   isLogin: state => {
@@ -69,10 +46,3 @@ export const getters = {
     return state.user;
   },
 }
-
-// export default {
-//   state,
-//   mutations,
-//   actions,
-//   getters,
-// }

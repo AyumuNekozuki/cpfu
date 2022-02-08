@@ -69,6 +69,7 @@ export default {
       }
     ],
     'nuxt-fontawesome',
+    'nuxt-webfontloader',
   ],
 
   fontawesome: {
@@ -84,10 +85,40 @@ export default {
     ],
   },
 
+  webfontloader: {
+    google: {
+      families: [
+        'Noto+Sans+JP:400,700',
+        'M+PLUS+Rounded+1c:100,300,400,500,700,800,900'
+      ]
+    }
+  },
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
     // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
-    baseURL: '/',
+    prefix: '/',
+    proxy: true,
+  },
+  proxy: {
+    '/api_extnico/': {
+      target: 'https://ext.nicovideo.jp',
+      pathRewrite: {
+        '^/api_extnico/': '/api/'
+      }
+    },
+    '/api_nicoad/': {
+      target: 'https://api.nicoad.nicovideo.jp',
+      pathRewrite: {
+        '^/api_nicoad/': '/v1/contents/'
+      }
+    },
+    '/api_nico/': {
+      target: 'https://www.nicovideo.jp',
+      pathRewrite: {
+        '^/api_nico/': ''
+      }
+    },
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
