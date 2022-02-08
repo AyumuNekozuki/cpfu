@@ -136,6 +136,6 @@ export default {
       }
     }
   },
-  buildDir: 'out/',
+  buildDir: 'dist',
 
 }
