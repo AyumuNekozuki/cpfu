@@ -70,6 +70,7 @@ export default {
     ],
     'nuxt-fontawesome',
     'nuxt-webfontloader',
+    '@nuxtjs/pwa',
   ],
 
   fontawesome: {
@@ -121,6 +122,12 @@ export default {
     },
   },
 
+  pwa: {
+    manifest: {
+      lang: 'ja'
+    }
+  },
+
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     extend(config, ctx) {
@@ -128,5 +135,6 @@ export default {
         fs: "empty"
       }
     }
-  }
+  },
+
 }
