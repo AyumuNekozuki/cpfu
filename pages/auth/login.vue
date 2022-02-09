@@ -61,8 +61,8 @@ export default {
 
       this.$fire.auth
         .signInWithEmailAndPassword(
-          process.env.cropura_demouser_email,
-          process.env.cropura_demouser_password
+          'cropura_demo_user@nekozuki.me',
+          'Hq_ctCzjuLp99KVMBaMnH2tg'
         )
         .then((user) => {
           $nuxt.$router.push("/");
