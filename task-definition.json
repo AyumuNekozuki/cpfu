@@ -1,0 +1,24 @@
+{
+  "family": "cpfu_nuxt_docker",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "cpfu_nuxt_docker",
+      "image": "cpfu_nuxt_docker",
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "executionRoleArn": "ecsTaskExecutionRole",
+  "cpu": "256",
+  "memory": "512"
+}
