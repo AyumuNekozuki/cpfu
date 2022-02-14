@@ -1,8 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - CPFU',
-    title: 'CPFU',
+    titleTemplate: '%s - くろぷら',
     htmlAttrs: {
       lang: 'ja'
     },
@@ -10,7 +9,8 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      { name: 'format-detection', content: 'telephone=no' },
+      { name: 'robots', content: 'none,noindex,nofollow' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -31,11 +31,9 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
-    '@nuxtjs/dotenv'
+    '@nuxtjs/dotenv',
+    '@nuxtjs/date-fns'
   ],
-  // router: {
-  //   // middleware: ['auth']
-  // },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
@@ -119,6 +117,19 @@ export default {
       pathRewrite: {
         '^/api_nico/': ''
       }
+    },
+    '/api_yt/': {
+      target: 'https://www.youtube.com',
+      pathRewrite: {
+        '^/api_yt/': ''
+      }
+    },
+    '/api_microcms/': {
+      target: 'https://ayumunekozuki.microcms.io',
+      pathRewrite: {
+        '^/api_microcms/': '/api/'
+      },
+      headers: { "X-MICROCMS-API-KEY": process.env.microcms_apikey },
     },
   },
 

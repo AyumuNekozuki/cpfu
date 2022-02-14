@@ -9,12 +9,12 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item-dropdown right class="descmenu youtube">
+          <b-nav-item-dropdown right class="descmenu youtube" v-if="ytid">
             <!-- Using 'button-content' slot -->
             <template #button-content>
               <font-awesome-icon :icon="['fab', 'youtube']" />
             </template>
-            <b-dropdown-item href="#"> YouTube Studio </b-dropdown-item>
+            <b-dropdown-item :href="'https://studio.youtube.com/video/'+ytid"> YouTube Studio </b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item-dropdown right class="descmenu nico">
             <!-- Using 'button-content' slot -->
@@ -74,9 +74,26 @@
               <font-awesome-icon :icon="['fab', 'youtube']" />
               YouTube
             </h3>
-            <p></p>
+            <p v-if="ytid">{{ ytid }}</p>
           </div>
-          {{nicohtml}}
+          <div v-if="ytid">
+            <div class="iframearea">
+              <iframe
+                :src="'https://www.youtube.com/embed/' + ytid"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </div>
+          <div class="set_ytid_area" v-if="!ytid">
+            <b-form-input
+            v-model="ytid_input"
+            placeholder="YouTube動画IDを入力してください"
+          ></b-form-input>
+           <b-button variant="primary" @click="update_ytid()">更新</b-button>
+          </div>
         </div>
         <div class="nico">
           <div class="head">
@@ -162,28 +179,65 @@
                 タグ
               </div>
               <div class="body">
-                <span class="nicotag" v-for="tag in nico_thumbdata.tags[0].tag" :key="tag">
-                  <a class="taglink" :href="'https://www.nicovideo.jp/tag/'+tag['_']" target="_blank" rel="noopener noreferrer" v-if="tag['_']">
-                    <span>{{ tag['_'] }}</span>
+                <span
+                  class="nicotag"
+                  v-for="tag in nico_thumbdata.tags[0].tag"
+                  :key="tag"
+                >
+                  <a
+                    class="taglink"
+                    :href="'https://www.nicovideo.jp/tag/' + tag['_']"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    v-if="tag['_']"
+                  >
+                    <span>{{ tag["_"] }}</span>
                   </a>
-                  <a class="taglink" :href="'https://www.nicovideo.jp/tag/'+tag" target="_blank" rel="noopener noreferrer" v-if="!tag['_']">
+                  <a
+                    class="taglink"
+                    :href="'https://www.nicovideo.jp/tag/' + tag"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    v-if="!tag['_']"
+                  >
                     <span>{{ tag }}</span>
                   </a>
                   <div class="pedia">
-                    <a class="hyaku" :href="'https://dic.nicovideo.jp/a/'+tag['_']" target="_blank" rel="noopener noreferrer" v-if="tag['_']">
+                    <a
+                      class="hyaku"
+                      :href="'https://dic.nicovideo.jp/a/' + tag['_']"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      v-if="tag['_']"
+                    >
                       <i class="nico-dic_hyaku"></i>
                     </a>
-                    <a class="hyaku" :href="'https://dic.nicovideo.jp/a/'+tag" target="_blank" rel="noopener noreferrer" v-if="!tag['_']">
+                    <a
+                      class="hyaku"
+                      :href="'https://dic.nicovideo.jp/a/' + tag"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      v-if="!tag['_']"
+                    >
                       <i class="nico-dic_hyaku"></i>
                     </a>
                   </div>
-
                 </span>
               </div>
             </div>
           </div>
 
-          <div class="playcount">{{ nico_thumbdata }}</div>
+          <div class="commentbox">
+            <div class="tagbox_body genre">
+              <div class="head">
+                <i class="nico-comment"></i>
+                新着コメント
+              </div>
+              <div class="body">
+                {{ nico_thumbdata.last_res_body[0] }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -193,16 +247,24 @@
 <script>
 export default {
   middleware: "auth",
-  async asyncData({ $axios, params }) {
+  async asyncData({ $axios, params, $fire }) {
     const parseString = require("xml2js").parseString;
 
     let nicoid = params.id;
+    let Snapshot = await $fire.firestore.collection("videos").doc(nicoid).get();
+    let ytid;
 
-    let [nico_giftdata, nico_adsdata, nico_thumbdata, nicohtml] = await Promise.all([
-      $axios.$get(`/api_nicoad/nage_video/${nicoid}/totalGiftPoint`),
-      $axios.$get(`/api_nicoad/video/${nicoid}`),
-      $axios.$get(`/api_extnico/getthumbinfo/${nicoid}`),
-    ]);
+    if(Snapshot.data()){
+      ytid = Snapshot.data().ytid;
+    }
+
+
+    let [nico_giftdata, nico_adsdata, nico_thumbdata, ythtml] =
+      await Promise.all([
+        $axios.$get(`/api_nicoad/nage_video/${nicoid}/totalGiftPoint`),
+        $axios.$get(`/api_nicoad/video/${nicoid}`),
+        $axios.$get(`/api_extnico/getthumbinfo/${nicoid}`),
+      ]);
 
     var xml = nico_thumbdata;
     parseString(xml, (message, xmlres) => {
@@ -213,9 +275,49 @@ export default {
       nico_giftdata: nico_giftdata.data.totalPoint,
       nico_adsdata: nico_adsdata.data.totalPoint,
       nico_thumbdata,
-      nicohtml
+      ythtml,
+      ytid,
     };
   },
+  methods: {
+    update_ytid(){
+      try {
+        let nicoid = this.nico_thumbdata.video_id[0];
+        this.$fire.firestore
+          .collection("videos")
+          .doc(nicoid)
+          .set(
+            {
+              ytid: this.ytid_input,
+            },
+            { merge: true }
+          )
+          .then(() => {
+            this.$bvToast.toast("動画IDを更新しました", {
+              title: "成功しました",
+              autoHideDelay: 3000,
+              variant: "success",
+            });
+            this.$router.push('/my')
+          })
+          .catch((error) => {
+            this.$bvToast.toast("ニコニコIDの変更に失敗しました。", {
+              title: "失敗しました",
+              autoHideDelay: 3000,
+              variant: "danger",
+            });
+            console.error(error);
+          });
+      } catch (error) {
+        this.$bvToast.toast("ニコニコIDの変更に失敗しました。", {
+          title: "失敗しました",
+          autoHideDelay: 3000,
+          variant: "danger",
+        });
+        console.error(error);
+      }
+    }
+  }
 };
 </script>
 
@@ -245,6 +347,11 @@ export default {
     .descmenu i {
       margin: 0 0.25rem;
     }
+  }
+  .navbar-brand,
+  .countdata > div > div.head > h3 {
+    font-weight: bold;
+    font-family: "M PLUS Rounded 1c", sans-serif;
   }
 
   .iframearea {
@@ -291,12 +398,14 @@ export default {
       }
 
       .countbox,
-      .tagbox {
+      .tagbox,
+      .commentbox,
+      .treebox {
         display: flex;
         flex-wrap: wrap;
-        margin: .5rem 0;
+        margin: 0.5rem 0;
 
-        .countbox_number{
+        .countbox_number {
           border-left: 4px solid rgb(238, 238, 238);
           padding: 8px 16px;
           width: calc(100% / 4);
@@ -313,13 +422,13 @@ export default {
           }
         }
 
-        .tagbox_body{
+        .tagbox_body {
           border-left: 4px solid rgb(238, 238, 238);
           padding: 8px 16px;
           width: 100%;
 
           .head {
-            margin: 0 0 .25rem;
+            margin: 0 0 0.25rem;
             font-size: 14px;
             color: #999;
             svg {
@@ -330,11 +439,30 @@ export default {
             }
           }
         }
+
+        .body.tree {
+          .me {
+            box-shadow: 0 0 3px #ccc;
+            padding: 5px;
+            border-radius: 5px;
+            p {
+              margin: 0;
+
+              &.id {
+                font-size: 12px;
+                color: #333;
+              }
+              &.title {
+                font-weight: bold;
+              }
+            }
+          }
+        }
       }
     }
   }
 
-  .nicotag{
+  .nicotag {
     background-color: #f4f4f4;
     border-radius: 12px;
     -webkit-box-sizing: border-box;
@@ -350,12 +478,12 @@ export default {
     position: relative;
     vertical-align: top;
 
-    .taglink{
+    .taglink {
       display: block;
       padding: 0 4px 0 8px;
     }
 
-    .hyaku{
+    .hyaku {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -372,7 +500,7 @@ export default {
       width: 16px;
       font-size: 10px;
 
-      i{
+      i {
         color: #fff;
         height: 100%;
         vertical-align: top;
@@ -382,6 +510,16 @@ export default {
         stroke-linejoin: round;
         stroke-miterlimit: 1.41421;
       }
+    }
+  }
+
+  .set_ytid_area{
+    display: flex;
+    margin: 1rem;
+    
+    button{
+      min-width: 4rem;
+      margin-left: .5rem;
     }
   }
 }
