@@ -301,7 +301,7 @@ export default {
             this.$router.push('/my')
           })
           .catch((error) => {
-            this.$bvToast.toast("ニコニコIDの変更に失敗しました。", {
+            this.$bvToast.toast("動画IDの変更に失敗しました。", {
               title: "失敗しました",
               autoHideDelay: 3000,
               variant: "danger",

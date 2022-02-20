@@ -33,6 +33,7 @@
             </g>
           </g>
         </svg>
+        <small>(α)</small>
       </b-navbar-brand>
 
       <b-navbar-nav>

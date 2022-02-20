@@ -20,6 +20,7 @@ export default {
 <style lang="scss" scoped>
 .logout{
   margin: 1rem;
+  min-height: calc(100vh - 185px);
   display: flex;
   flex-direction: column;
   align-items: center;
